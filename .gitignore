@@ -5,3 +5,4 @@ coverage/
 *.pid
 # local reference only (proof of concept on an internal schema), never published
 poc/
+soak-results/

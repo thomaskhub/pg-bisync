@@ -47,16 +47,32 @@ type cluster struct {
 
 func newCluster(t *testing.T, pgArgs ...map[string][]string) *cluster {
 	t.Helper()
-	testpg.Require(t)
 	extra := map[string][]string{}
 	if len(pgArgs) > 0 {
 		extra = pgArgs[0]
 	}
+	return newClusterOpts(t, map[string]testpg.Options{"in": {PGArgs: extra["in"]}, "eu": {PGArgs: extra["eu"]}})
+}
+
+// newClusterWith starts both nodes with the same options.
+func newClusterWith(t *testing.T, o testpg.Options) *cluster {
+	t.Helper()
+	return newClusterOpts(t, map[string]testpg.Options{"in": o, "eu": o})
+}
+
+func newClusterOpts(t *testing.T, opts map[string]testpg.Options) *cluster {
+	t.Helper()
+	testpg.Require(t)
 	c := &cluster{cancel: map[string]context.CancelFunc{}, done: map[string]chan struct{}{}}
+	start := func(name string) *testpg.Node {
+		o := opts[name]
+		o.Name, o.Schema = name, "../examples/schema.sql"
+		return testpg.StartWith(t, o)
+	}
 	var wg sync.WaitGroup
 	wg.Add(2)
-	go func() { defer wg.Done(); c.in = testpg.Start(t, "in", "../examples/schema.sql", extra["in"]...) }()
-	go func() { defer wg.Done(); c.eu = testpg.Start(t, "eu", "../examples/schema.sql", extra["eu"]...) }()
+	go func() { defer wg.Done(); c.in = start("in") }()
+	go func() { defer wg.Done(); c.eu = start("eu") }()
 	wg.Wait()
 	c.cfg = map[string]config.Config{"in": nodeConfig("in", "eu", c.in.DSN, c.eu.DSN), "eu": nodeConfig("eu", "in", c.eu.DSN, c.in.DSN)}
 	for _, n := range []*testpg.Node{c.in, c.eu} {
@@ -138,14 +154,33 @@ func (c *cluster) waitSync(t *testing.T, timeout time.Duration) time.Duration {
 			time.Sleep(time.Second)
 		}
 	}
+	seen := func(n *testpg.Node, id string) bool {
+		var one int
+		// errors (a node restarting) just mean "not yet"
+		return n.Pool.QueryRow(context.Background(), "SELECT 1 FROM owner WHERE id = $1", id).Scan(&one) == nil
+	}
 	for time.Since(t0) < timeout {
-		if c.eu.Text(t, "SELECT id FROM owner WHERE id = $1", m["in"]) != "" && c.in.Text(t, "SELECT id FROM owner WHERE id = $1", m["eu"]) != "" {
+		if seen(c.eu, m["in"]) && seen(c.in, m["eu"]) {
 			return time.Since(t0)
 		}
 		time.Sleep(50 * time.Millisecond)
 	}
 	t.Fatalf("no sync within %s (status in: %s / eu: %s)", timeout, c.in.Text(t, "SELECT state || ' ' || message FROM bisync.status"), c.eu.Text(t, "SELECT state || ' ' || message FROM bisync.status"))
 	return 0
+}
+
+// waitReady waits until both nodes answer queries (after a container restart).
+func (c *cluster) waitReady(t *testing.T, timeout time.Duration) {
+	t.Helper()
+	deadline := time.Now().Add(timeout)
+	for _, n := range both(c) {
+		for n.Pool.Ping(context.Background()) != nil {
+			if time.Now().After(deadline) {
+				t.Fatalf("%s does not answer", n.Name)
+			}
+			time.Sleep(500 * time.Millisecond)
+		}
+	}
 }
 
 // diff returns the tables whose content differs between the nodes.

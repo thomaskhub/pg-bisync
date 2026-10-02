@@ -39,9 +39,34 @@ type Config struct {
 
 	UniquePolicy map[string]string `json:"unique_policy"` // table → stop | merge (default stop)
 
+	Alerts Alerts `json:"alerts"`
+
 	StatusInterval time.Duration `json:"-"`
 	RetryMax       time.Duration `json:"-"`
 }
+
+// Alerts configures "pg-bisync watch". Secrets come from the environment:
+// PGBISYNC_TELEGRAM_TOKEN, PGBISYNC_WEBHOOK_URL.
+type Alerts struct {
+	TelegramChatID string  `json:"telegram_chat_id"`
+	WebhookURL     string  `json:"webhook_url"`
+	IntervalSec    int     `json:"interval_seconds"`
+	GraceSec       int     `json:"grace_seconds"`
+	LagMB          int64   `json:"lag_mb"`
+	ClockMillis    float64 `json:"clock_ms"`
+
+	TelegramToken string        `json:"-"`
+	Interval      time.Duration `json:"-"`
+	Grace         time.Duration `json:"-"`
+	LagBytes      int64         `json:"-"`
+}
+
+const (
+	defaultAlertInterval = 30 * time.Second
+	defaultAlertGrace    = 2 * time.Minute
+	defaultAlertLagMB    = 64
+	defaultAlertClockMs  = 200
+)
 
 var nodeName = regexp.MustCompile(`^[a-z][a-z0-9_]{0,30}$`)
 
@@ -61,6 +86,10 @@ func Load(path string) (Config, error) {
 	}
 	if v := os.Getenv("PGBISYNC_PEER_DSN"); v != "" {
 		c.PeerDSN = v
+	}
+	c.Alerts.TelegramToken = os.Getenv("PGBISYNC_TELEGRAM_TOKEN")
+	if v := os.Getenv("PGBISYNC_WEBHOOK_URL"); v != "" {
+		c.Alerts.WebhookURL = v
 	}
 	c.SetDefaults()
 	return c, c.Validate()
@@ -85,6 +114,21 @@ func (c *Config) SetDefaults() {
 	}
 	if c.RetryMax == 0 {
 		c.RetryMax = defaultRetryMax
+	}
+	a := &c.Alerts
+	a.Interval, a.Grace = defaultAlertInterval, defaultAlertGrace
+	if a.IntervalSec > 0 {
+		a.Interval = time.Duration(a.IntervalSec) * time.Second
+	}
+	if a.GraceSec > 0 {
+		a.Grace = time.Duration(a.GraceSec) * time.Second
+	}
+	if a.LagMB == 0 {
+		a.LagMB = defaultAlertLagMB
+	}
+	a.LagBytes = a.LagMB << 20
+	if a.ClockMillis == 0 {
+		a.ClockMillis = defaultAlertClockMs
 	}
 }
 

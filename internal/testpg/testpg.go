@@ -57,13 +57,31 @@ func run(t *testing.T, args ...string) string {
 	return strings.TrimSpace(string(out))
 }
 
+// Options of a test node.
+type Options struct {
+	Name   string
+	Schema string   // SQL file loaded after start ("" = none)
+	CPUs   string   // container CPU limit, e.g. "0.5" (simulates a small VM); "" = none
+	PGArgs []string // extra postgres arguments, e.g. "-c", "wal_sender_timeout=3s"
+}
+
 // Start starts a node with logical replication enabled and the given schema file loaded.
 func Start(t *testing.T, name, schemaFile string, pgArgs ...string) *Node {
 	t.Helper()
+	return StartWith(t, Options{Name: name, Schema: schemaFile, PGArgs: pgArgs})
+}
+
+// StartWith starts a node with the given options.
+func StartWith(t *testing.T, o Options) *Node {
+	t.Helper()
+	name, schemaFile := o.Name, o.Schema
 	ctr := fmt.Sprintf("pgbisync-test-%s-%d", name, time.Now().UnixNano())
-	args := []string{"run", "-d", "--name", ctr, "-e", "POSTGRES_PASSWORD=" + password, "-e", "POSTGRES_DB=bisync",
-		"-p", "127.0.0.1::5432", image, "-c", "wal_level=logical", "-c", "max_replication_slots=10", "-c", "max_wal_senders=10"}
-	run(t, append(args, pgArgs...)...)
+	args := []string{"run", "-d", "--name", ctr, "-e", "POSTGRES_PASSWORD=" + password, "-e", "POSTGRES_DB=bisync", "-p", "127.0.0.1::5432"}
+	if o.CPUs != "" {
+		args = append(args, "--cpus", o.CPUs)
+	}
+	args = append(args, image, "-c", "wal_level=logical", "-c", "max_replication_slots=10", "-c", "max_wal_senders=10")
+	run(t, append(args, o.PGArgs...)...)
 	t.Cleanup(func() {
 		if t.Failed() && os.Getenv("PGBISYNC_KEEP") == "1" {
 			t.Logf("keeping container %s (PGBISYNC_KEEP=1)", ctr)
@@ -134,6 +152,20 @@ func (n *Node) Pause(t *testing.T) { t.Helper(); run(t, "pause", n.Container) }
 
 // Unpause resumes a paused container.
 func (n *Node) Unpause(t *testing.T) { t.Helper(); run(t, "unpause", n.Container) }
+
+// HostPort returns the host:port of the node's DSN.
+func (n *Node) HostPort() string {
+	s := strings.TrimPrefix(n.DSN, "postgres://")
+	s = s[strings.Index(s, "@")+1:]
+	return s[:strings.Index(s, "/")]
+}
+
+// Restart restarts the container and waits until it accepts connections.
+func (n *Node) Restart(t *testing.T) {
+	t.Helper()
+	run(t, "restart", "-t", "2", n.Container)
+	n.waitReady(t)
+}
 
 // Exec runs SQL (multiple statements allowed without args) and fails the test on error.
 func (n *Node) Exec(t *testing.T, sql string, args ...any) {

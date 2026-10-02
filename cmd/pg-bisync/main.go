@@ -25,6 +25,7 @@ commands:
   init       first copy of all synced tables from the peer (local tables must be empty)
   run        stream the peer's changes and apply them locally (until SIGINT/SIGTERM)
   status     sync state as JSON (state, lag, backlog, conflicts, clock difference)
+  watch      check the status regularly and alert (Telegram / webhook) until SIGINT/SIGTERM
   compare    compare both databases per table (exit 1 on differences)
   repair     re-send one row from the winning node: -table t -id x -winner node
 `
@@ -62,6 +63,8 @@ func main() {
 		err = run(ctx, cfg, log)
 	case "status":
 		out, err = status(ctx, cfg)
+	case "watch":
+		err = watchCmd(ctx, cfg, log)
 	case "compare":
 		var diff bool
 		out, diff, err = compareCmd(ctx, cfg)

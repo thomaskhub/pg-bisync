@@ -12,9 +12,11 @@ import (
 	"github.com/thomkin/pg-bisync/internal/compare"
 	"github.com/thomkin/pg-bisync/internal/config"
 	"github.com/thomkin/pg-bisync/internal/initcopy"
+	"github.com/thomkin/pg-bisync/internal/notify"
 	"github.com/thomkin/pg-bisync/internal/schema"
 	statuspkg "github.com/thomkin/pg-bisync/internal/status"
 	"github.com/thomkin/pg-bisync/internal/stream"
+	"github.com/thomkin/pg-bisync/internal/watch"
 	"github.com/thomkin/pg-bisync/internal/worker"
 )
 
@@ -66,6 +68,21 @@ func initCopy(ctx context.Context, cfg config.Config, log *slog.Logger) (any, er
 
 func status(ctx context.Context, cfg config.Config) (any, error) {
 	return statuspkg.Run(ctx, cfg)
+}
+
+func watchCmd(ctx context.Context, cfg config.Config, log *slog.Logger) error {
+	var n notify.Multi
+	a := cfg.Alerts
+	if a.TelegramToken != "" && a.TelegramChatID != "" {
+		n = append(n, notify.Telegram{Token: a.TelegramToken, ChatID: a.TelegramChatID})
+	}
+	if a.WebhookURL != "" {
+		n = append(n, notify.Webhook{URL: a.WebhookURL})
+	}
+	if len(n) == 0 {
+		return errors.New("watch: no notifier (set alerts.telegram_chat_id + PGBISYNC_TELEGRAM_TOKEN, or PGBISYNC_WEBHOOK_URL)")
+	}
+	return watch.Run(ctx, cfg, n, log)
 }
 
 func compareCmd(ctx context.Context, cfg config.Config) (any, bool, error) {

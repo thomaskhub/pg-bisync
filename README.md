@@ -76,6 +76,29 @@ lost. Config: [`examples/node-in.json`](examples/node-in.json); `PGBISYNC_LOCAL_
 | Restore a node from backup                               | treat as rebuild (`init`): the peer may have released WAL the restored node still needs                                                                                                                                                 |
 | Second worker by mistake                                 | harmless: an advisory lock lets only one apply; the other waits and takes over                                                                                                                                                          |
 
+## Alerts
+
+`pg-bisync watch -config node.json` checks this node every 30 s and sends one message when a
+problem starts and one when it is resolved:
+
+| Alert                | When                                                               |
+| -------------------- | ------------------------------------------------------------------ |
+| sync stalled         | `stalled` for longer than the grace period (default 2 min)         |
+| worker not connected | slot on the peer inactive for longer than the grace period         |
+| peer unreachable     | for longer than the grace period                                   |
+| slot lost            | the peer released WAL this node still needs: rebuild (immediately) |
+| lag                  | slot lag over `lag_mb` (default 64 MB) on either side              |
+| clock                | clock difference to the peer over `clock_ms` (default 200 ms)      |
+| conflicts            | new rows in `bisync.conflict`                                      |
+
+Channels: Telegram (`alerts.telegram_chat_id` + `PGBISYNC_TELEGRAM_TOKEN`) and a generic webhook
+(`PGBISYNC_WEBHOOK_URL`, posts `{"text": "…"}`). A new channel is one more implementation of
+`notify.Notifier`. Run `watch` next to `run` (second systemd unit).
+
+```json
+"alerts": { "telegram_chat_id": "-100123", "interval_seconds": 30, "grace_seconds": 120, "lag_mb": 64, "clock_ms": 200 }
+```
+
 ## Limits
 
 Two nodes; one schema; DDL is not replicated; no TRUNCATE; no primary-key updates; row-level last
@@ -96,7 +119,11 @@ PGBISYNC_IT=1 PGBISYNC_BENCH=1 go test -run TestBench ./test/
 - Chaos: random concurrent writes on both nodes, workers killed with SIGKILL, a node restarted; both
   nodes are checked against a reference model of the expected final state.
 - Faults: partition, 50,000-row transaction (never partly visible), two workers, sender timeout,
-  lost slot + rebuild, unknown parent.
+  lost slot + rebuild, unknown parent, delete during apply, restart exactly once, least privilege.
+- WAN: `TestChaosWAN` runs the chaos test through a proxy that simulates a wide-area link
+  (130 ms ± 20 ms each way, random drops, cuts) with each database limited to half a CPU.
+- Soak: the kit in [`soak/`](soak/README.md) runs for hours or days on any Linux machine with docker
+  (no Go needed) and checks both databases against the reference model every hour.
 
 Measured on a laptop (Postgres 17 in podman): write overhead of triggers + publication within
 noise; apply ~2,800 single-row transactions/s end to end; idle worker 17 MB RSS, 0 % CPU; binary
