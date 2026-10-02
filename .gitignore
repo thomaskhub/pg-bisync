@@ -1,0 +1,7 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.pid
+# local reference only (proof of concept on an internal schema), never published
+poc/
