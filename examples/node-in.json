@@ -1,0 +1,11 @@
+{
+  "node": "in",
+  "peer": "eu",
+  "local_dsn": "postgres://bisync@127.0.0.1:5432/app?sslmode=disable",
+  "peer_dsn": "postgres://bisync@db-eu.internal:5432/app?sslmode=require",
+  "schema": "public",
+  "tables": [],
+  "updated_column": "updated_at",
+  "tie_break_node": "in",
+  "unique_policy": { "asset": "merge" }
+}

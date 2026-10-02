@@ -1,0 +1,19 @@
+[Unit]
+Description=pg-bisync (two-way PostgreSQL sync)
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+User=pg-bisync
+# DSNs with passwords from a root-owned env file (PGBISYNC_LOCAL_DSN, PGBISYNC_PEER_DSN)
+EnvironmentFile=/etc/pg-bisync/env
+ExecStart=/usr/local/bin/pg-bisync run -config /etc/pg-bisync/node.json
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
