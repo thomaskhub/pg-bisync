@@ -52,7 +52,7 @@ app (node eu) ─ read/write ─→ PostgreSQL eu ──WAL stream──→ pg-b
 ## Setup
 
 ```sh
-go build -o pg-bisync ./cmd/pg-bisync                 # or: go install github.com/thomkin/pg-bisync/cmd/pg-bisync@latest
+go build -o pg-bisync ./cmd/pg-bisync                 # or: go install github.com/thomaskhub/pg-bisync/cmd/pg-bisync@latest
 pg-bisync install -config in.json                     # on both nodes: schema bisync, triggers, publication
 pg-bisync install -config eu.json
 pg-bisync init -config eu.json                        # empty node only: copy everything from the peer

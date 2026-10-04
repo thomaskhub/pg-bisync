@@ -9,7 +9,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/thomkin/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/config"
 )
 
 // Report is the JSON output of "status".

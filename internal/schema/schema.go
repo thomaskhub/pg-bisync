@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/thomkin/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/config"
 )
 
 // DB is the subset of pgx used here (implemented by *pgx.Conn, pgx.Tx and *pgxpool.Pool).

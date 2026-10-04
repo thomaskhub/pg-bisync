@@ -14,7 +14,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/thomkin/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/config"
 )
 
 const usage = `usage: pg-bisync <command> -config node.json [flags]

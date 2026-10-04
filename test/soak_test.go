@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/status"
-	"github.com/thomkin/pg-bisync/internal/testpg"
+	"github.com/thomaskhub/pg-bisync/internal/status"
+	"github.com/thomaskhub/pg-bisync/internal/testpg"
 )
 
 // soakSettings come from the environment (see soak/README.md).

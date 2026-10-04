@@ -9,15 +9,15 @@ import (
 	"github.com/jackc/pglogrepl"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/thomkin/pg-bisync/internal/compare"
-	"github.com/thomkin/pg-bisync/internal/config"
-	"github.com/thomkin/pg-bisync/internal/initcopy"
-	"github.com/thomkin/pg-bisync/internal/notify"
-	"github.com/thomkin/pg-bisync/internal/schema"
-	statuspkg "github.com/thomkin/pg-bisync/internal/status"
-	"github.com/thomkin/pg-bisync/internal/stream"
-	"github.com/thomkin/pg-bisync/internal/watch"
-	"github.com/thomkin/pg-bisync/internal/worker"
+	"github.com/thomaskhub/pg-bisync/internal/compare"
+	"github.com/thomaskhub/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/initcopy"
+	"github.com/thomaskhub/pg-bisync/internal/notify"
+	"github.com/thomaskhub/pg-bisync/internal/schema"
+	statuspkg "github.com/thomaskhub/pg-bisync/internal/status"
+	"github.com/thomaskhub/pg-bisync/internal/stream"
+	"github.com/thomaskhub/pg-bisync/internal/watch"
+	"github.com/thomaskhub/pg-bisync/internal/worker"
 )
 
 func install(ctx context.Context, cfg config.Config) (any, error) {

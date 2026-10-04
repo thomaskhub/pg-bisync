@@ -1,4 +1,4 @@
-module github.com/thomkin/pg-bisync
+module github.com/thomaskhub/pg-bisync
 
 go 1.25.0
 

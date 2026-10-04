@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/notify"
-	"github.com/thomkin/pg-bisync/internal/watch"
+	"github.com/thomaskhub/pg-bisync/internal/notify"
+	"github.com/thomaskhub/pg-bisync/internal/watch"
 )
 
 // TestWatch: a stall on eu is reported once after the grace period, and its resolution once.

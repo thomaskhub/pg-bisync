@@ -12,11 +12,11 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/thomkin/pg-bisync/internal/config"
-	"github.com/thomkin/pg-bisync/internal/schema"
-	"github.com/thomkin/pg-bisync/internal/stream"
-	"github.com/thomkin/pg-bisync/internal/testpg"
-	"github.com/thomkin/pg-bisync/internal/worker"
+	"github.com/thomaskhub/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/schema"
+	"github.com/thomaskhub/pg-bisync/internal/stream"
+	"github.com/thomaskhub/pg-bisync/internal/testpg"
+	"github.com/thomaskhub/pg-bisync/internal/worker"
 )
 
 var tables = []string{"owner", "owner_login", "asset", "project", "item", "access"}

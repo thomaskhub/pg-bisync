@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/schema"
-	"github.com/thomkin/pg-bisync/internal/stream"
+	"github.com/thomaskhub/pg-bisync/internal/schema"
+	"github.com/thomaskhub/pg-bisync/internal/stream"
 )
 
 const typesSchema = `

@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/config"
-	"github.com/thomkin/pg-bisync/internal/initcopy"
-	"github.com/thomkin/pg-bisync/internal/schema"
-	"github.com/thomkin/pg-bisync/internal/testpg"
+	"github.com/thomaskhub/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/initcopy"
+	"github.com/thomaskhub/pg-bisync/internal/schema"
+	"github.com/thomaskhub/pg-bisync/internal/testpg"
 )
 
 // TestInit: eu starts empty; init copies in (incl. writes during and after the copy), then both

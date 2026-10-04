@@ -17,8 +17,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"github.com/thomkin/pg-bisync/internal/config"
-	"github.com/thomkin/pg-bisync/internal/stream"
+	"github.com/thomaskhub/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/stream"
 )
 
 // Conflict kinds recorded in bisync.conflict. Recorded conflicts do not stop the sync.

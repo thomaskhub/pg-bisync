@@ -17,7 +17,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/thomkin/pg-bisync/internal/testpg"
+	"github.com/thomaskhub/pg-bisync/internal/testpg"
 )
 
 // ---------------------------------------------------------------------------------------------

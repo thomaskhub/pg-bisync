@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/config"
-	"github.com/thomkin/pg-bisync/internal/notify"
-	"github.com/thomkin/pg-bisync/internal/status"
+	"github.com/thomaskhub/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/notify"
+	"github.com/thomaskhub/pg-bisync/internal/status"
 )
 
 // Thresholds of the rules.

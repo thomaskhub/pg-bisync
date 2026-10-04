@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/status"
+	"github.com/thomaskhub/pg-bisync/internal/status"
 )
 
 var th = Thresholds{Grace: 2 * time.Minute, LagBytes: 64 << 20, ClockMillis: 200}

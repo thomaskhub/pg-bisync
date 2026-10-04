@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/apply"
-	"github.com/thomkin/pg-bisync/internal/initcopy"
-	"github.com/thomkin/pg-bisync/internal/status"
-	"github.com/thomkin/pg-bisync/internal/worker"
+	"github.com/thomaskhub/pg-bisync/internal/apply"
+	"github.com/thomaskhub/pg-bisync/internal/initcopy"
+	"github.com/thomaskhub/pg-bisync/internal/status"
+	"github.com/thomaskhub/pg-bisync/internal/worker"
 )
 
 // TestFaultPartition: eu frozen for 20 s while both keep writing; converges after the partition.

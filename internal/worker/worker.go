@@ -11,9 +11,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/thomkin/pg-bisync/internal/apply"
-	"github.com/thomkin/pg-bisync/internal/config"
-	"github.com/thomkin/pg-bisync/internal/stream"
+	"github.com/thomaskhub/pg-bisync/internal/apply"
+	"github.com/thomaskhub/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/stream"
 )
 
 const firstBackoff = time.Second

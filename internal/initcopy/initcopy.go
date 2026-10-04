@@ -15,9 +15,9 @@ import (
 	"github.com/jackc/pglogrepl"
 	"github.com/jackc/pgx/v5"
 
-	"github.com/thomkin/pg-bisync/internal/config"
-	"github.com/thomkin/pg-bisync/internal/schema"
-	"github.com/thomkin/pg-bisync/internal/stream"
+	"github.com/thomaskhub/pg-bisync/internal/config"
+	"github.com/thomaskhub/pg-bisync/internal/schema"
+	"github.com/thomaskhub/pg-bisync/internal/stream"
 )
 
 // Report summarises a copy.

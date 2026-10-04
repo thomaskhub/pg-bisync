@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/thomkin/pg-bisync/internal/testpg"
+	"github.com/thomaskhub/pg-bisync/internal/testpg"
 )
 
 type chaosOptions struct {

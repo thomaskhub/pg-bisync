@@ -7,9 +7,9 @@ import (
 
 	"github.com/jackc/pgx/v5"
 
-	"github.com/thomkin/pg-bisync/internal/compare"
-	"github.com/thomkin/pg-bisync/internal/status"
-	"github.com/thomkin/pg-bisync/internal/testpg"
+	"github.com/thomaskhub/pg-bisync/internal/compare"
+	"github.com/thomaskhub/pg-bisync/internal/status"
+	"github.com/thomaskhub/pg-bisync/internal/testpg"
 )
 
 // divergeSilently changes a row on n without syncing it (simulates a lost change).
